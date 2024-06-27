@@ -12,7 +12,7 @@ function App() {
   const [options, setOptions] = useState({
     uppercase: false,
     imageSeparation: false,
-    translate: 'english' // Default selection
+    translate: 'english'
   });
 
   const handleFileChange = (e) => {
@@ -41,7 +41,6 @@ function App() {
 
     const formData = new FormData();
     formData.append('file', file);
-    // Append selected options to formData
     Object.keys(options).forEach(key => {
       if (options[key]) {
         formData.append(key, true);
@@ -89,7 +88,7 @@ function App() {
           }} />
         </div>
         <div style={{ display: 'flex', marginTop: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'calc(10%)' }}>
+          <div style={{ display: 'none', alignItems: 'center', marginLeft: 'calc(10%)' }}>
             <h2>Options: </h2>
             <div style={{ display: 'flex', gap: 4 }}>
               <label>

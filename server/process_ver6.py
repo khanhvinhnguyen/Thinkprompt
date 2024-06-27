@@ -1,6 +1,6 @@
 import sys
 import os
-import fitz  # PyMuPDF
+import fitz 
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
@@ -12,7 +12,7 @@ from pptx import Presentation
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
-from translate import Translator  # Use the `translate` library
+from translate import Translator
 
 input_file = sys.argv[1]
 output_file = sys.argv[2]
@@ -40,11 +40,11 @@ def extract_pdf_text_images(input_file, output_dir):
                             "font": "Roboto-Medium",
                             "size": span["size"],
                             "color": span["color"],
-                            "bbox": span["bbox"],  # capture bounding box
-                            "page_num": page_num   # keep track of page number
+                            "bbox": span["bbox"],
+                            "page_num": page_num
                         })
                         full_text += span["text"] + "\n"
-            elif block["type"] == 1:  # Image block
+            elif block["type"] == 1: 
                 img_list = page.get_images(full=True)
                 for img_index, img in enumerate(img_list):
                     xref = img[0]
@@ -55,7 +55,7 @@ def extract_pdf_text_images(input_file, output_dir):
                     ensure_dir_exists(os.path.dirname(img_path))
                     with open(img_path, "wb") as img_file:
                         img_file.write(image_bytes)
-                    images.append((img_path, block["bbox"], page_num))  # keep track of page number
+                    images.append((img_path, block["bbox"], page_num)) 
 
     return full_text, images, text_details
 
@@ -117,18 +117,18 @@ def create_uppercase_pdf(text_details, images, output_file):
     margin = 50
 
     def add_text(c, text_details, max_width):
-        x = margin  # Starting x position
-        y = height - margin  # Starting y position
+        x = margin 
+        y = height - margin 
         for detail in text_details:
             c.setFont("Roboto-Medium", detail["size"])
             c.setFillColorRGB((detail["color"] >> 16 & 0xFF) / 255.0, (detail["color"] >> 8 & 0xFF) / 255.0, (detail["color"] & 0xFF) / 255.0)
             text = detail["text"].upper()
-            # Check if the current line can fit in the remaining width
+          
             if x + c.stringWidth(text, "Roboto-Medium", detail["size"]) > max_width:
-                x = margin  # Reset x position
-                y -= detail["size"] + 2  # Move to the next line with a small margin
+                x = margin 
+                y -= detail["size"] + 2 
             c.drawString(x, y, text)
-            x += c.stringWidth(text + " ", "Roboto-Medium", detail["size"])  # Add space after each text
+            x += c.stringWidth(text + " ", "Roboto-Medium", detail["size"]) 
 
     add_text(c, text_details, width - 2 * margin)
 
@@ -157,7 +157,7 @@ def set_cell_border(cell, border_color):
 
 def create_uppercase_docx(text_details, images, tables, output_file):
     doc = Document()
-    border_color = "0000FF"  # Blue color for table borders
+    border_color = "0000FF" 
 
     for detail in text_details:
         para = doc.add_paragraph()

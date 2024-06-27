@@ -1,6 +1,6 @@
 import sys
 import os
-import fitz  # PyMuPDF
+import fitz  
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
@@ -34,11 +34,11 @@ def extract_pdf_text_images(input_file, output_dir):
                             "font": "Roboto-Medium",
                             "size": span["size"],
                             "color": span["color"],
-                            "bbox": span["bbox"],  # capture bounding box
-                            "page_num": page_num   # keep track of page number
+                            "bbox": span["bbox"],  
+                            "page_num": page_num   
                         })
                         full_text += span["text"] + "\n"
-            elif block["type"] == 1:  # Image block
+            elif block["type"] == 1:  
                 img_list = page.get_images(full=True)
                 for img_index, img in enumerate(img_list):
                     xref = img[0]
@@ -49,7 +49,7 @@ def extract_pdf_text_images(input_file, output_dir):
                     ensure_dir_exists(os.path.dirname(img_path))
                     with open(img_path, "wb") as img_file:
                         img_file.write(image_bytes)
-                    images.append((img_path, block["bbox"], page_num))  # keep track of page number
+                    images.append((img_path, block["bbox"], page_num))  
 
     return full_text, images, text_details
 
@@ -95,9 +95,9 @@ def create_uppercase_pdf(text_details, images, output_file):
     margin = 50
 
     def add_text(c, text_details, max_width):
-        current_page = -1  # Initialize current_page
-        x = margin  # Starting x position
-        y = height - margin  # Starting y position
+        current_page = -1  
+        x = margin  
+        y = height - margin  
         for detail in text_details:
             if current_page != detail["page_num"]:
                 if current_page != -1:
@@ -106,21 +106,21 @@ def create_uppercase_pdf(text_details, images, output_file):
                 c.setPageSize(letter)
                 c.setFont('Roboto-Medium', 12)
                 c.drawString(margin, height - margin, f"Page {current_page + 1}")
-                x = margin  # Reset x position at the beginning of a new page
-                y = height - margin  # Reset y position at the beginning of a new page
+                x = margin  
+                y = height - margin  
             c.setFont("Roboto-Medium", detail["size"])
             c.setFillColorRGB((detail["color"] >> 16 & 0xFF) / 255.0, (detail["color"] >> 8 & 0xFF) / 255.0, (detail["color"] & 0xFF) / 255.0)
             text = detail["text"].upper()
-            # Check if the current line can fit in the remaining width
+            
             if x + c.stringWidth(text, "Roboto-Medium", detail["size"]) > max_width:
-                x = margin  # Reset x position
-                y -= detail["size"] + 2  # Move to the next line with a small margin
+                x = margin  
+                y -= detail["size"] + 2  
             c.drawString(x, y, text)
-            x += c.stringWidth(text + " ", "Roboto-Medium", detail["size"])  # Add space after each text
+            x += c.stringWidth(text + " ", "Roboto-Medium", detail["size"])  
 
     add_text(c, text_details, width - 2 * margin)
 
-    current_page = -1  # Initialize current_page for images
+    current_page = -1  
     for img_path, bbox, page_num in images:
         if page_num != current_page:
             if current_page != -1:
